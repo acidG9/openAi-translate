@@ -11,6 +11,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('You reached backend of translation-bot');
+});
 app.use("/api", routes);
 
 const startServer = async () => {
