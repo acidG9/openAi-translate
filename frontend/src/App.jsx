@@ -1,71 +1,70 @@
-import { useState } from "react";
-import { Send } from "lucide-react";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Toaster, toast } from "react-hot-toast";
+
+import Home from "./Home";
+import Login from "./login";
+
 import API from "./axios";
 
 function App() {
-  const [messages, setMessages] = useState([]);
-  const [text, setText] = useState("");
-  const [language, setLanguage] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+  const location = useLocation();
 
-  async function handleSend(e) {
-    e.preventDefault();
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
 
-    setMessages((prev) => [...prev, { sender: "user", text }]);
+      try {
+        const res = await API.get("/verify");
+        setIsAuthenticated(res.data.valid);
+      } catch (err) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        setIsAuthenticated(false);
+        toast.error("Session expired. Please login again.");
+        console.log(err);
+      }
+    };
 
-    try {
-      setLoading(true);
-      const res = await API.post("/translate", { text, language });
-      const translated = res.data.translatedText;
+    verifyToken();
+  }, [location.pathname]);
 
-      setMessages((prev) => [...prev, { sender: "bot", text: translated }]);
-    } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: " Error: Could not translate." },
-      ]);
-      console.error(error);
-    } finally {
-      setLoading(false);
-      setText("");
-    }
+  if (isAuthenticated === null) {
+    return (
+      <div className="loading-screen">
+        <div className="spinner" />
+        <p>Checking authentication...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="chat-container">
-      <div className="chat-header">Translation Bot</div>
+    <>
+      <Toaster position="top-center" reverseOrder={false} />
 
-      <div className="chat-box">
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`chat-bubble ${msg.sender === "user" ? "user" : "bot"}`}
-          >
-            {msg.text}
-          </div>
-        ))}
-        {loading && <div className="chat-bubble bot">Translating...</div>}
-      </div>
+      <main className="flex-grow">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              isAuthenticated ? <Navigate to="/home" replace /> : <Login />
+            }
+          />
 
-      <form className="chat-input" onSubmit={handleSend}>
-        <input
-          type="text"
-          placeholder="Type something..."
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          required
-        />
-        <input
-          type="text"
-          placeholder="Language like french"
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-        />
-        <button type="submit" disabled={loading}>
-          <Send />
-        </button>
-      </form>
-    </div>
+          <Route
+            path="/home"
+            element={isAuthenticated ? <Home /> : <Navigate to="/" replace />}
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </main>
+    </>
   );
 }
 

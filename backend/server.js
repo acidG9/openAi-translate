@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
+import mongoose from "mongoose";
 
 import routes from "./routes/routes.js";
 
@@ -14,6 +15,9 @@ app.use("/api", routes);
 
 const startServer = async () => {
   try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("MongoDB connected");
+
     app.listen(process.env.PORT || 5000, () => {
       console.log(`Server running on port ${process.env.PORT || 5000}`);
     });
