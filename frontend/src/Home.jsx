@@ -10,6 +10,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
   const [history, setHistory] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const user = localStorage.getItem("user");
 
@@ -83,12 +84,14 @@ function Home() {
   function handleSelectChat(chat) {
     setSelectedChat(chat._id);
     setMessages(chat.messages);
+    setSidebarOpen(false);
   }
 
   function handleNewChat() {
     setMessages([]);
     setSelectedChat(null);
     toast.success("Started a new chat!");
+    setSidebarOpen(false);
   }
 
   function handleLogout() {
@@ -103,9 +106,12 @@ function Home() {
 
   return (
     <div className="home-container">
-      <aside className="sidebar">
+      {/* Sidebar */}
+      <aside className={`sidebar ${sidebarOpen ? "active" : ""}`}>
         <div className="sidebar-header">
-          <h3 className="sidebar-title">Saved Chats</h3>
+          <h3 className={`sidebar-title ${sidebarOpen ? "activeMargin" : ""}`}>
+            Saved Chats
+          </h3>
           <button onClick={handleNewChat} className="new-chat-btn">
             newChat
           </button>
@@ -131,9 +137,18 @@ function Home() {
         </button>
       </aside>
 
+      {/* Chat container */}
       <div className="chat-container">
         <div className="chat-header">
-          Translation Bot
+          <div
+            className={`hamburger ${sidebarOpen ? "active" : ""}`}
+            onClick={() => setSidebarOpen((prev) => !prev)}
+          >
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+          <span>Translation Bot</span>
           <button onClick={handleSave} className="save-btn">
             Save
           </button>
@@ -159,6 +174,7 @@ function Home() {
             placeholder="Type something..."
             value={text}
             onChange={(e) => setText(e.target.value)}
+            className="input-1"
             required
           />
           <input
@@ -166,7 +182,7 @@ function Home() {
             placeholder="Language e.g. French"
             value={language}
             onChange={(e) => setLanguage(e.target.value)}
-            required
+            className="input-2"
           />
           <button type="submit" disabled={loading}>
             <Send />

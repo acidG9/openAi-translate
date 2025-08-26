@@ -22,7 +22,16 @@ export const doTranslate = async (req, res) => {
 
     const targetLang = language ? language : "English";
 
-    const prompt = `Translate the following text into ${targetLang} and only give translation in response nothing else: """${text}"""`;
+    //const prompt = `Translate the following text into ${targetLang} and only give translation in response nothing else: """${text}"""`;
+
+    const prompt = `You are a translation assistant. Your job is to translate the given text into the target language, but before translating:
+     1. Validate if the provided target language name is a valid known language. - If it seems misspelled, suggest the most likely correct language name. 
+     2. Validate if the input text is meaningful and correctly spelled. - If it seems wrong or misspelled, suggest a corrected version. 
+     3. After giving suggestions (if needed), always provide the translation using the corrected text and corrected language. 
+     Format your answer exactly as follows: 
+     - If suggestions exist: Suggestions: <list suggestions here>\n\nTranslation: <final translation> 
+     - If no suggestions: Translation: <final translation> 
+     Here is the input: Target language: ${targetLang} Text: """${text}""" `;
 
     const response = await client.chat.completions.create({
       model: "gpt-4o",

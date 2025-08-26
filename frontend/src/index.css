@@ -1,16 +1,16 @@
 :root {
-  --primary: #008080;
-  --primary-dark: #006666;
-  --primary-light: #e0f2f1;
-  --secondary: #4fc3f7;
-  --accent: #26a69a;
-  --background: #f8fdff;
-  --card-bg: #ffffff;
-  --text: #333333;
-  --text-light: #666666;
-  --border: #e0e0e0;
-  --success: #4caf50;
-  --error: #f44336;
+  --primary: #6a1b9a; /* Royal Purple */
+  --primary-dark: #4a148c; /* Deep Purple */
+  --primary-light: #ede7f6; /* Soft Lavender Background */
+  --secondary: #9c27b0; /* Vibrant Purple Accent */
+  --accent: #d81b60; /* Magenta / Pink Accent */
+  --background: #f9f7fb; /* Light Neutral Background */
+  --card-bg: #ffffff; /* Card White */
+  --text: #2e2e38; /* Almost Black */
+  --text-light: #6f6f7b; /* Muted Gray Text */
+  --border: #e0d7ea; /* Subtle Purple Gray Border */
+  --success: #43a047; /* Green (unchanged for clarity) */
+  --error: #e53935; /* Red (unchanged for clarity) */
 }
 
 * {
@@ -222,16 +222,24 @@ select:focus {
   cursor: not-allowed;
 }
 
+.toggle-text {
+  text-align: center;
+  color: var(--secondary);
+}
+
 .toggle-link {
-  background: #239ba7;
-  color: white;
+  background: none;
   border: none;
-  padding: 5px 8px;
-  border-radius: 10px;
-  font-size: 0.9rem;
+  color: var(--primary);
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  margin-left: 0.5rem;
+  padding: 0 0.3rem;
+  transition: color 0.3s ease;
+}
+
+.toggle-link:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
 }
 
 /* ================= HOME / CHAT ================= */
@@ -254,6 +262,7 @@ select:focus {
   padding: 16px;
   display: flex;
   flex-direction: column;
+  transition: left 0.3s ease;
 }
 
 .sidebar-header {
@@ -394,6 +403,7 @@ select:focus {
   border-bottom-left-radius: 6px;
 }
 
+/* Chat Input */
 .chat-input {
   display: flex;
   gap: 10px;
@@ -443,19 +453,132 @@ select:focus {
   }
 }
 
-/* Responsive */
+/* ================= Hamburger Button ================= */
+.hamburger {
+  width: 28px;
+  height: 22px;
+  position: relative;
+  display: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.hamburger span {
+  position: absolute;
+  height: 3px;
+  width: 100%;
+  background: white;
+  border-radius: 2px;
+  left: 0;
+  transition: 0.3s ease;
+}
+
+.hamburger span:nth-child(1) {
+  top: 0;
+}
+.hamburger span:nth-child(2) {
+  top: 9px;
+}
+.hamburger span:nth-child(3) {
+  bottom: 0;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg);
+  top: 9px;
+}
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg);
+  bottom: 9px;
+}
+
+/* ================= Responsive ================= */
 @media (max-width: 768px) {
   .home-container {
     flex-direction: column;
-    height: 95vh;
-  }
-  .sidebar {
+    height: 100vh;
     width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
+    margin: 0;
+    border-radius: 0;
   }
+
+  /* Sidebar as full overlay */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 70%;
+    height: 100%;
+    background: linear-gradient(180deg, var(--primary), var(--primary-dark));
+    padding: 16px;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+  .sidebar.active {
+    left: 0;
+  }
+
+  .history-list {
+    max-height: calc(100vh - 150px);
+    overflow-y: auto;
+  }
+
   .chat-container {
     flex: 1;
-    height: 100%;
+    width: 100%;
+    height: 100vh;
+  }
+
+  .chat-header {
+    font-size: 1rem;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+  }
+
+  .hamburger {
+    display: block;
+    margin-right: 12px;
+    z-index: 1100;
+    position: relative;
+  }
+
+  .chat-header span {
+    flex: 1;
+    text-align: center;
+  }
+
+  .chat-box {
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .chat-bubble {
+    max-width: 85%;
+    font-size: 0.9rem;
+    padding: 10px 12px;
+  }
+  .activeMargin {
+    margin-left: 30px;
+  }
+}
+
+@media (max-width: 568px) {
+  .chat-input {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .chat-input input {
+    width: 100%;
+  }
+
+  .chat-input button {
+    align-self: center;
+    margin-top: 6px;
+    width: 30%;
   }
 }
