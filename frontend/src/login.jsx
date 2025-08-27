@@ -111,13 +111,7 @@ const Login = () => {
             </div>
 
             <button type="submit" className="submit-btn" disabled={loading}>
-              {loading ? (
-                <span className="spinner" />
-              ) : isReg ? (
-                "Sign IN"
-              ) : (
-                "Sign Up"
-              )}
+              {loading ? "Checking...." : isReg ? "Sign IN" : "Sign Up"}
             </button>
 
             <p className="toggle-text">
